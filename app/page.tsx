@@ -1,11 +1,15 @@
+"use client";
+import { useState } from "react";
 import { getEligibleCourses } from "../lib/eligibilityChecker";
 import { getBlockedCourses }
 from "../lib/blockedCourses";
 export default function Home() {
-  const completedCourses = [
-    "CS100",
-    "CS113",
-  ];
+  const [input, setInput] = useState("CS100, CS113");
+
+  const completedCourses = input
+    .split(",")
+    .map((course) => course.trim().toUpperCase())
+    .filter((course) => course.length > 0);
 
   const eligibleCourses =
     getEligibleCourses(completedCourses);
@@ -16,6 +20,18 @@ export default function Home() {
       <h1 className="text-5xl font-bold mb-10">
         Resolve Academic Engine
       </h1>
+      <div className="mb-8">
+  <label className="block text-2xl font-semibold mb-3">
+    Enter Completed Courses
+  </label>
+
+  <input
+    className="w-full rounded-lg border border-gray-700 bg-black px-4 py-3 text-white"
+    value={input}
+    onChange={(event) => setInput(event.target.value)}
+    placeholder="Example: CS100, CS113"
+  />
+</div>
 
       <div className="mb-8">
         <h2 className="text-2xl font-semibold mb-3">
