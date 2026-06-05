@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { validateCourseHistory } from "../lib/historyValidator";
 import { getGraduationProgress } from "../lib/progressTracker";
 import { getEligibleCourses } from "../lib/eligibilityChecker";
 import { getBlockedCourses }
@@ -11,13 +12,16 @@ export default function Home() {
     .split(",")
     .map((course) => course.trim().toUpperCase())
     .filter((course) => course.length > 0);
-
+  const validation =
+  validateCourseHistory(completedCourses);
+  const correctedCompletedCourses =
+    validation.correctedCompletedCourses;
   const eligibleCourses =
-    getEligibleCourses(completedCourses);
+    getEligibleCourses(correctedCompletedCourses);
   const blockedCourses =
-    getBlockedCourses(completedCourses);
+    getBlockedCourses(correctedCompletedCourses);
   const progress =
-    getGraduationProgress(completedCourses);
+    getGraduationProgress(correctedCompletedCourses);
   return (
     <main className="max-w-4xl mx-auto p-8">
       <h1 className="text-5xl font-bold mb-10">
@@ -35,6 +39,26 @@ export default function Home() {
     placeholder="Example: CS100, CS113"
   />
 </div>
+{validation.missingInferredCourses.length > 0 && (
+  <div className="mb-8 rounded-lg border border-yellow-600 p-4">
+    <h2 className="text-2xl font-semibold mb-3">
+      Inferred Missing Prerequisites
+    </h2>
+
+    <p>
+      Resolve detected that these prerequisite courses were missing
+      from your completed course list:
+    </p>
+
+    <ul className="mt-2">
+      {validation.missingInferredCourses.map((course) => (
+        <li key={course}>
+          {course}
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
       <div className="mb-8">
   <h2 className="text-2xl font-semibold mb-3">
     Graduation Progress
@@ -58,7 +82,7 @@ export default function Home() {
         </h2>
 
         <ul className="space-y-1">
-          {completedCourses.map((course) => (
+          {correctedCompletedCourses.map((course) => (
             <li key={course}>
               {course}
             </li>
