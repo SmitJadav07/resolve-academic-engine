@@ -1,11 +1,12 @@
 "use client";
 import { useState } from "react";
+import { getGraduationProgress } from "../lib/progressTracker";
 import { getEligibleCourses } from "../lib/eligibilityChecker";
 import { getBlockedCourses }
 from "../lib/blockedCourses";
 export default function Home() {
   const [input, setInput] = useState("CS100, CS113");
-
+  
   const completedCourses = input
     .split(",")
     .map((course) => course.trim().toUpperCase())
@@ -15,6 +16,8 @@ export default function Home() {
     getEligibleCourses(completedCourses);
   const blockedCourses =
     getBlockedCourses(completedCourses);
+  const progress =
+    getGraduationProgress(completedCourses);
   return (
     <main className="max-w-4xl mx-auto p-8">
       <h1 className="text-5xl font-bold mb-10">
@@ -32,7 +35,23 @@ export default function Home() {
     placeholder="Example: CS100, CS113"
   />
 </div>
+      <div className="mb-8">
+  <h2 className="text-2xl font-semibold mb-3">
+    Graduation Progress
+  </h2>
 
+  <p>
+    Completed Credits: {progress.completedCredits}
+  </p>
+
+  <p>
+    Total Credits: {progress.totalCredits}
+  </p>
+
+  <p>
+    Progress: {progress.progressPercentage}%
+  </p>
+</div>
       <div className="mb-8">
         <h2 className="text-2xl font-semibold mb-3">
           Completed Courses
